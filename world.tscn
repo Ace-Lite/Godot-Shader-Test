@@ -1,0 +1,102 @@
+[gd_scene load_steps=15 format=3 uid="uid://d18kxbhgqd0j1"]
+
+[ext_resource type="Texture2D" uid="uid://1f4bekxe7oj3" path="res://textures/Sprite-0001.png" id="1_5tgp7"]
+[ext_resource type="Script" path="res://Player.gd" id="1_22pr0"]
+[ext_resource type="Shader" uid="uid://cxtfr0vtbk6r1" path="res://Global_object_shader.tres" id="2_5d4dv"]
+[ext_resource type="Shader" uid="uid://b6dy34cyavfiu" path="res://enviromentshader.tres" id="4_mkpxk"]
+[ext_resource type="Shader" path="res://skyshader.gdshader" id="5_4t7y7"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_a8mb1"]
+render_priority = 0
+shader = ExtResource("2_5d4dv")
+shader_parameter/albedo = Color(1, 1, 1, 1)
+shader_parameter/uv1_scale = Vector3(1, 1, 1)
+shader_parameter/uv1_offset = Vector3(0, 0, 0)
+shader_parameter/texture_albedo = ExtResource("1_5tgp7")
+
+[sub_resource type="QuadMesh" id="QuadMesh_jvlm1"]
+material = SubResource("ShaderMaterial_a8mb1")
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_d4lhy"]
+size = Vector3(0.485596, 1, 0.816895)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_thh1s"]
+render_priority = 0
+shader = ExtResource("4_mkpxk")
+shader_parameter/albedo = Color(1, 1, 1, 1)
+shader_parameter/point_size = 1.0
+shader_parameter/roughness = 1.0
+shader_parameter/metallic_texture_channel = null
+shader_parameter/specular = 0.5
+shader_parameter/metallic = 0.0
+shader_parameter/uv1_scale = Vector3(1, 1, 1)
+shader_parameter/uv1_offset = Vector3(0, 0, 0)
+shader_parameter/uv2_scale = Vector3(1, 1, 1)
+shader_parameter/uv2_offset = Vector3(0, 0, 0)
+shader_parameter/noise_scale = 5.0
+shader_parameter/noise_transform = null
+
+[sub_resource type="BoxMesh" id="BoxMesh_8b7gq"]
+material = SubResource("ShaderMaterial_thh1s")
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_mxt4w"]
+size = Vector3(1.03979, 1, 1.00837)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_k5rgq"]
+shader = ExtResource("5_4t7y7")
+
+[sub_resource type="Sky" id="Sky_s5p1o"]
+sky_material = SubResource("ShaderMaterial_k5rgq")
+
+[sub_resource type="Environment" id="Environment_56l03"]
+background_mode = 2
+background_color = Color(0.505882, 0.486275, 0.933333, 1)
+sky = SubResource("Sky_s5p1o")
+ambient_light_source = 3
+reflected_light_source = 2
+
+[node name="World" type="Node3D"]
+
+[node name="Player" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0356, 0)
+script = ExtResource("1_22pr0")
+
+[node name="CharacterBody3D" type="CharacterBody3D" parent="Player"]
+safe_margin = 9.753
+
+[node name="RayCast3D" type="RayCast3D" parent="Player/CharacterBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0184326, -0.01542, 0.0327148)
+target_position = Vector3(0, -0.1, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Player/CharacterBody3D"]
+transform = Transform3D(-0.999975, -0.00708587, -1.78091e-05, -0.00708589, 0.999972, 0.00251326, 0, 0.00251332, -0.999997, -0.00379655, 0.504328, 0.00275839)
+mesh = SubResource("QuadMesh_jvlm1")
+skeleton = NodePath("../../..")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Player/CharacterBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.544191, 0.249198, 0.121962)
+shape = SubResource("BoxShape3D_d4lhy")
+
+[node name="Camera_Wise" type="Node3D" parent="Player"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.65595, -1.70244)
+
+[node name="Camera3D" type="Camera3D" parent="Player/Camera_Wise"]
+transform = Transform3D(-1, 6.18172e-08, -6.18172e-08, 0, 0.707107, 0.707107, 8.74228e-08, 0.707107, -0.707107, 0, 0, 0)
+current = true
+fov = 90.0
+
+[node name="Debug_Floor" type="MeshInstance3D" parent="."]
+transform = Transform3D(23.6701, 0, 0, 0, 0.503994, 0, 0, 0, 25.1996, 0, -0.193138, 0)
+mesh = SubResource("BoxMesh_8b7gq")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Debug_Floor"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Debug_Floor/StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0108648, 0, -0.00181926)
+shape = SubResource("BoxShape3D_mxt4w")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="Debug_Floor"]
+transform = Transform3D(0.03733, -0.0141795, -0.0137931, 0.0124857, -1.36648, 1.43855, -0.0185792, -0.0255039, -0.0240649, 0.123648, 28.4042, -0.836267)
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_56l03")
